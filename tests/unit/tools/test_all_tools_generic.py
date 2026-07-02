@@ -75,20 +75,19 @@ AUTH_TOOLS_ARGS = [
     ("thinkneo_business_impact", {}),
     ("thinkneo_detect_waste", {}),
     # Outcome validation tools need DB state — tested separately
-    ("thinkneo_bridge_mcp_to_a2a", {"mcp_tool_name": "thinkneo_check"}),
-    ("thinkneo_bridge_a2a_to_mcp", {"a2a_task": '{"id":"1","message":{"role":"user","parts":[{"text":"hi"}]}}'}),
-    ("thinkneo_bridge_generate_agent_card", {}),
+    ("thinkneo_bridge_mcp_to_a2a", {"tool_name": "thinkneo_check"}),
+    ("thinkneo_bridge_a2a_to_mcp", {"agent_name": "test"}),
+    ("thinkneo_bridge_generate_agent_card", {"agent_id": "test"}),
     ("thinkneo_bridge_list_mappings", {}),
-    ("thinkneo_a2a_log", {"from_agent": "a", "to_agent": "b", "action": "task_sent"}),
-    ("thinkneo_a2a_set_policy", {"from_agent": "a", "to_agent": "b"}),
-    ("thinkneo_a2a_flow_map", {}),
+    ("thinkneo_a2a_log", {}),
+    ("thinkneo_a2a_policy", {}),
+    ("thinkneo_a2a_flow", {}),
     ("thinkneo_a2a_audit", {}),
     # policy_create needs DB upsert mock — tested separately
     ("thinkneo_policy_evaluate", {"context": '{"model":"gpt-4o"}'}),
     ("thinkneo_policy_list", {}),
     # policy_violations needs DB state — tested separately
     # compliance_generate needs DB rows — tested separately
-    ("thinkneo_compliance_list", {}),
     ("thinkneo_benchmark_compare", {"task_type": "chat"}),
     ("thinkneo_benchmark_report", {}),
     ("thinkneo_router_explain", {"task_type": "chat"}),

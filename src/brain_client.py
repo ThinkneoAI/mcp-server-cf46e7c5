@@ -50,7 +50,7 @@ async def brain_get(path: str, params: Optional[dict] = None, token: Optional[st
         headers["Authorization"] = f"Bearer {token}"
     params = _inject_tenant_id(path, params)
     try:
-        async with httpx.AsyncClient(timeout=BRAIN_API_TIMEOUT, verify=False) as client:
+        async with httpx.AsyncClient(timeout=BRAIN_API_TIMEOUT, verify=False) as client:  # nosec B501 — internal-only brain gateway (http://neo-brain-api), not internet-facing
             resp = await client.get(url, params=params, headers=headers)
             if resp.status_code == 200:
                 return resp.json()
@@ -75,7 +75,7 @@ async def brain_post(path: str, body: Optional[dict] = None, token: Optional[str
                 body["tenant_id"] = BRAIN_TENANT_ID
                 break
     try:
-        async with httpx.AsyncClient(timeout=BRAIN_API_TIMEOUT, verify=False) as client:
+        async with httpx.AsyncClient(timeout=BRAIN_API_TIMEOUT, verify=False) as client:  # nosec B501 — internal-only brain gateway (http://neo-brain-api), not internet-facing
             resp = await client.post(url, json=body, headers=headers)
             if resp.status_code in (200, 201):
                 return resp.json()
