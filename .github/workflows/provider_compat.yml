@@ -10,8 +10,8 @@ jobs:
     name: Anthropic (Sonnet, Haiku, Opus)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install httpx pytest pytest-timeout "psycopg[binary]" psycopg_pool
@@ -24,8 +24,8 @@ jobs:
     name: OpenAI (GPT-4o, GPT-4o-mini, GPT-4.1)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install httpx pytest pytest-timeout "psycopg[binary]" psycopg_pool
@@ -38,8 +38,8 @@ jobs:
     name: Google (Gemini 2.5 Pro/Flash/Flash-Lite, 2.0 Flash/Flash-Lite, embedding-001)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install httpx pytest pytest-timeout "psycopg[binary]" psycopg_pool
@@ -52,8 +52,8 @@ jobs:
     name: NVIDIA NIM (Nemotron)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install httpx pytest pytest-timeout "psycopg[binary]" psycopg_pool
