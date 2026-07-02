@@ -38,8 +38,10 @@ jobs:
             | tar xz mcp-publisher
           sudo mv mcp-publisher /usr/local/bin/
 
-      - name: Login via GitHub OIDC
-        run: mcp-publisher login github-oidc
+      - name: Login via DNS (ai.thinkneo namespace)
+        run: mcp-publisher login dns --domain thinkneo.ai --private-key "$MCP_DNS_PRIVATE_KEY"
+        env:
+          MCP_DNS_PRIVATE_KEY: ${{ secrets.MCP_DNS_PRIVATE_KEY }}
 
       - name: Publish to MCP Registry
         run: mcp-publisher publish ./server.json
