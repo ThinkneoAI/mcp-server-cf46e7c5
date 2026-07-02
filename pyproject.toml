@@ -1,6 +1,6 @@
 [project]
 name = "thinkneo-mcp-server"
-version = "1.28.0"
+version = "1.29.0"
 description = "Enterprise AI Control Plane — MCP server for spend tracking, guardrails, policy enforcement, budget monitoring, compliance, and provider health."
 license = "MIT"
 requires-python = ">=3.11"
