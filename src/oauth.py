@@ -63,18 +63,23 @@ _DB_HOST = os.getenv("MCP_DB_HOST", "172.17.0.1")
 _DB_PORT = int(os.getenv("MCP_DB_PORT", "5432"))
 _DB_NAME = os.getenv("MCP_DB_NAME", "thinkneo_mcp")
 _DB_USER = os.getenv("MCP_DB_USER", "mcp_user")
+# Deferred: fail loud on first connect, not import — keeps stdio wrappers /
+# marketplace smoke-tests able to import the module without a DB configured.
 _DB_PASSWORD = os.getenv("MCP_DB_PASSWORD")
-if not _DB_PASSWORD:
-    raise RuntimeError("MCP_DB_PASSWORD environment variable must be set")
-_conninfo = (
-    f"host={_DB_HOST} port={_DB_PORT} dbname={_DB_NAME} "
-    f"user={_DB_USER} password={_DB_PASSWORD} "
-    f"sslmode=prefer"
-)
+
+
+def _conninfo() -> str:
+    if not _DB_PASSWORD:
+        raise RuntimeError("MCP_DB_PASSWORD environment variable must be set")
+    return (
+        f"host={_DB_HOST} port={_DB_PORT} dbname={_DB_NAME} "
+        f"user={_DB_USER} password={_DB_PASSWORD} "
+        f"sslmode=prefer"
+    )
 
 
 def _get_conn() -> psycopg.Connection:
-    return psycopg.connect(_conninfo, connect_timeout=5, autocommit=True)
+    return psycopg.connect(_conninfo(), connect_timeout=5, autocommit=True)
 
 
 def _sha256_hex(value: str) -> str:

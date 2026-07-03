@@ -25,14 +25,17 @@ _DB_HOST = os.getenv("MCP_DB_HOST", "172.17.0.1")
 _DB_PORT = int(os.getenv("MCP_DB_PORT", "5432"))
 _DB_NAME = os.getenv("MCP_DB_NAME", "thinkneo_mcp")
 _DB_USER = os.getenv("MCP_DB_USER", "mcp_user")
-# No default value — fail loud if not configured
+# Deferred check: fail loud on first DB connect, not on import — so marketplace
+# smoke-tests / stdio wrappers can import the module without a live DB configured.
 _DB_PASSWORD = os.getenv("MCP_DB_PASSWORD")
-if not _DB_PASSWORD:
-    raise RuntimeError("MCP_DB_PASSWORD environment variable must be set")
 _RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 _FROM_EMAIL = os.getenv("MCP_FROM_EMAIL", "ThinkNEO <no-reply@thinkneo.ai>")
 
-_conninfo = f"host={_DB_HOST} port={_DB_PORT} dbname={_DB_NAME} user={_DB_USER} password={_DB_PASSWORD}"
+
+def _conninfo() -> str:
+    if not _DB_PASSWORD:
+        raise RuntimeError("MCP_DB_PASSWORD environment variable must be set")
+    return f"host={_DB_HOST} port={_DB_PORT} dbname={_DB_NAME} user={_DB_USER} password={_DB_PASSWORD}"
 
 # ── PII helpers ────────────────────────────────────────────────────────────
 
@@ -121,7 +124,7 @@ def _create_key_in_db(api_key: str, email: str) -> bool:
     """Insert new API key into PostgreSQL. Returns True on success.
     Keys created via signup are marked auto_registered=false."""
     try:
-        with psycopg.connect(_conninfo, connect_timeout=5) as conn:
+        with psycopg.connect(_conninfo(), connect_timeout=5) as conn:
             with conn.cursor() as cur:
                 # Check if email already has a key
                 cur.execute("SELECT key_prefix FROM api_keys WHERE email = %s", (email,))
