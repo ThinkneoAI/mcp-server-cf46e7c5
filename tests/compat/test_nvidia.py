@@ -11,6 +11,7 @@ Note: nvidia/llama-3.1-nemotron-70b-instruct deprecated (404 as of 2026-04-25).
 """
 
 import json
+import time
 import httpx
 import pytest
 from .conftest import get_key, measure_call, log_latency, validate_chat_response, check_status
@@ -21,6 +22,16 @@ MODELS = [
     "nvidia/llama-3.3-nemotron-super-49b-v1",
     "nvidia/nemotron-mini-4b-instruct",
 ]
+
+# Nemotron Super 49B cold-starts around ~30-60s under load. A 60s ceiling covers
+# real cold starts without letting hangs pin the CI for minutes.
+_CHAT_TIMEOUT = 60
+
+# Provider-side transient conditions: 429 = quota, 503 = overloaded, plus the
+# httpx read/connect timeouts. None is a compatibility break — retry once, then
+# skip. A 404 decommission still hard-fails via check_status.
+_TRANSIENT_STATUSES = (429, 503)
+_TRANSIENT_EXCS = (httpx.ReadTimeout, httpx.ConnectTimeout, httpx.RemoteProtocolError)
 
 
 @pytest.fixture
@@ -37,10 +48,27 @@ def _chat(api_key: str, model: str, text: str = "Say 'OK' and nothing else.") ->
         }, headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-        }, timeout=30)
+        }, timeout=_CHAT_TIMEOUT)
+        return resp
+
+    def _run_with_retry():
+        try:
+            resp, latency = measure_call(call)
+        except _TRANSIENT_EXCS as exc:
+            time.sleep(2)
+            try:
+                resp, latency = measure_call(call)
+            except _TRANSIENT_EXCS as retry_exc:
+                pytest.skip(f"nvidia transient timeout ({model}): {retry_exc!r}")
+        if resp.status_code in _TRANSIENT_STATUSES:
+            time.sleep(2)
+            resp, latency = measure_call(call)
+            if resp.status_code in _TRANSIENT_STATUSES:
+                pytest.skip(f"nvidia transient status ({model}): {resp.status_code}")
         check_status(resp, "nvidia")
-        return resp.json()
-    return measure_call(call)
+        return resp.json(), latency
+
+    return _run_with_retry()
 
 
 @pytest.mark.parametrize("model", MODELS)
