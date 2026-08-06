@@ -1,5 +1,7 @@
 # ThinkNEO MCP Server
 
+[![MCP Queen operational grade](https://mcpqueen.com/badge/ai.thinkneo/control-plane.svg)](https://mcpqueen.com/s/ai.thinkneo/control-plane)
+
 > Open MCP server with built-in defense layer (ThinkShield).
 > Part of the [ThinkNEO Platform](https://thinkneo.ai) — enterprise AI governance.
 
